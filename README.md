@@ -1,0 +1,2 @@
+# mzr
+Małopolski Rummikub
