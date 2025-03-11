@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Liga() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-white ">
+    <div className="flex flex-col text-white ">
       <h1 className="text-4xl font-bold">Strona Główna Ligi</h1>
       <p className="mt-4 text-lg">Wybierz swoją ligę:</p>
       <div className="mt-6 flex space-x-4">

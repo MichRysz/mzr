@@ -13,7 +13,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pl">
-      <body className="min-h-screen flex flex-col bg-gradient-to-tr from-[#bb0808] to-[#ff7878]">
+      <body className="h-screen flex flex-col bg-gradient-to-tr from-[#bb0808] to-[#ff7878]">
 
         <Navbar />
         <div className="flex flex-grow">

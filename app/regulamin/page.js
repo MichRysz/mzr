@@ -1,4 +1,4 @@
 export default function Regulamin() {
-    return <h1 className="min-h-screen flex flex-col items-center justify-center text-white ">Regulamin</h1>;
+    return <h1 className="text-4xl font-bold flex flex-col text-white ">Regulamin</h1>;
   }
   
