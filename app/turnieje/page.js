@@ -1,4 +1,4 @@
 export default function Turnieje() {
-    return <h1 className="text-2xl font-semibold">Strona Turniejów</h1>;
+    return <h1 className="min-h-screen flex flex-col items-center justify-center text-white ">Strona Turniejów</h1>;
   }
   
