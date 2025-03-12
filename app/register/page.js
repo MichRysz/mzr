@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-// Pobieramy URL i klucz anonimowy z zmiennych środowiskowych
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// Tworzymy instancję klienta Supabase
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from "/lib/supabaseClient"; // Import Supabase
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -29,30 +22,51 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    console.log("Rejestracja użytkownika:", formData); // Debugging
 
-    // Używamy supabase.auth.signUp do rejestracji użytkownika,
-    // przekazując dodatkowe dane w opcji "data"
+    // 1️⃣ Rejestracja użytkownika w Supabase Authentication
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
-      options: {
-        data: {
+    });
+
+    if (error) {
+      setMessage(error.message);
+      console.error("Błąd podczas rejestracji:", error);
+      return;
+    }
+
+    const user = data.user;
+    if (!user) {
+      setMessage("Nie udało się utworzyć użytkownika.");
+      return;
+    }
+
+    console.log("Zarejestrowano użytkownika:", user);
+
+    // 2️⃣ Zapisanie danych w tabeli `profiles`
+    const { error: dbError } = await supabase
+      .from("profiles")
+      .insert([
+        {
+          id: user.id, // Używamy identyfikatora użytkownika z Authentication
+          email: formData.email,
           firstName: formData.firstName,
           lastName: formData.lastName,
           city: formData.city,
           province: formData.province,
           birthDate: formData.birthDate,
         },
-      },
-    });
+      ]);
 
-    if (error) {
-      setMessage(error.message);
-      console.error("Error during sign up:", error);
-    } else {
-      setMessage("Rejestracja przebiegła pomyślnie! Sprawdź swój email w celu potwierdzenia.");
-      console.log("User registered:", data);
+    if (dbError) {
+      setMessage("Błąd podczas zapisywania danych w bazie.");
+      console.error("Błąd zapisu do bazy:", dbError);
+      return;
     }
+
+    setMessage("Rejestracja zakończona sukcesem! Sprawdź e-mail, aby potwierdzić konto.");
   };
 
   return (
@@ -73,7 +87,7 @@ export default function Register() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
             required
           />
         </div>
@@ -88,7 +102,7 @@ export default function Register() {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
             required
           />
         </div>
@@ -103,7 +117,7 @@ export default function Register() {
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
             required
           />
         </div>
@@ -118,7 +132,7 @@ export default function Register() {
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
             required
           />
         </div>
@@ -133,7 +147,7 @@ export default function Register() {
             name="city"
             value={formData.city}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
             required
           />
         </div>
@@ -148,7 +162,7 @@ export default function Register() {
             name="province"
             value={formData.province}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
             required
           />
         </div>
@@ -163,7 +177,7 @@ export default function Register() {
             name="birthDate"
             value={formData.birthDate}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
             required
           />
         </div>
@@ -176,8 +190,7 @@ export default function Register() {
              hover:from-[#ff7878] hover:to-[#bb0808] 
              shadow-[6px_6px_12px_rgba(0,0,0,0.8)] 
              hover:shadow-[10px_10px_18px_rgba(0,0,0,1)] 
-             overflow-hidden group"
->
+             overflow-hidden group">
               <span className="relative z-10">Załóż konto</span>
               <span className="absolute z-0 left-[-70%] top-[-50%] w-[50px] h-[100px] bg-white bg-opacity-50 transform skew-x-[-15deg] transition-all duration-500 group-hover:left-[110%]"></span>
             </button>
